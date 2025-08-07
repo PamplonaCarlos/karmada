@@ -69,7 +69,6 @@ func (es *AccurateSchedulerEstimatorServer) estimateReplicas(
 		affinity    = nodeutil.GetRequiredNodeAffinity(requirements)
 		tolerations []corev1.Toleration
 	)
-
 	if requirements.NodeClaim != nil {
 		tolerations = requirements.NodeClaim.Tolerations
 	}
