@@ -24,7 +24,7 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             privileged: false
-          image: docker.io/karmada/karmada-scheduler:latest
+          image: docker.io/carlospamplonalsd/karmada-scheduler:v1.15-debug
           imagePullPolicy: IfNotPresent
           livenessProbe:
             httpGet:
