@@ -26,6 +26,7 @@ import (
 	workv1alpha2 "github.com/karmada-io/karmada/pkg/apis/work/v1alpha2"
 	"github.com/karmada-io/karmada/pkg/util"
 	"github.com/karmada-io/karmada/pkg/util/helper"
+	"k8s.io/klog/v2"
 )
 
 var (
@@ -89,18 +90,22 @@ type assignState struct {
 func newAssignState(candidates []*clusterv1alpha1.Cluster, spec *workv1alpha2.ResourceBindingSpec,
 	status *workv1alpha2.ResourceBindingStatus) *assignState {
 	var strategyType string
-
+	klog.Info("FUXICO - setting strategy")
 	switch spec.Placement.ReplicaSchedulingType() {
 	case policyv1alpha1.ReplicaSchedulingTypeDuplicated:
+		klog.Info("FUXICO - duplicated strategy")
 		strategyType = DuplicatedStrategy
 	case policyv1alpha1.ReplicaSchedulingTypeDivided:
 		switch spec.Placement.ReplicaScheduling.ReplicaDivisionPreference {
 		case policyv1alpha1.ReplicaDivisionPreferenceAggregated:
+			klog.Info("FUXICO - Aggregated strategy")
 			strategyType = AggregatedStrategy
 		case policyv1alpha1.ReplicaDivisionPreferenceWeighted:
 			if spec.Placement.ReplicaScheduling.WeightPreference != nil && len(spec.Placement.ReplicaScheduling.WeightPreference.DynamicWeight) != 0 {
+				klog.Info("FUXICO - Dynamic weight strategy")
 				strategyType = DynamicWeightStrategy
 			} else {
+				klog.Info("FUXICO - static weight strategy")
 				strategyType = StaticWeightStrategy
 			}
 		}
@@ -118,8 +123,10 @@ func newAssignState(candidates []*clusterv1alpha1.Cluster, spec *workv1alpha2.Re
 }
 
 func (as *assignState) buildScheduledClusters() {
+	klog.Info("FUXICO - build scheduled clusters function")
 	candidateClusterSet := sets.Set[string]{}
 	for _, c := range as.candidates {
+		klog.Info("add cluster candidate: %s", c.Name)
 		candidateClusterSet.Insert(c.Name)
 	}
 	as.scheduledClusters = []workv1alpha2.TargetCluster{}
