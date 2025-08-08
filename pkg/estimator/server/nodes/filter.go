@@ -17,8 +17,6 @@ limitations under the License.
 package nodes
 
 import (
-	"fmt"
-
 	corev1 "k8s.io/api/core/v1"
 	schedcorev1 "k8s.io/component-helpers/scheduling/corev1"
 	"k8s.io/component-helpers/scheduling/corev1/nodeaffinity"
@@ -49,17 +47,14 @@ func GetRequiredNodeAffinity(requirements pb.ReplicaRequirements) nodeaffinity.R
 			},
 		},
 	}
-	fmt.Printf("nodeaffinity.GetRequiredNodeAffinity(pod): %v\n", nodeaffinity.GetRequiredNodeAffinity(pod))
+	klog.Info("[DEBUG] - Asking nodeaffinity from the pod")
+	klog.Info(nodeaffinity.GetRequiredNodeAffinity(pod))
 	return nodeaffinity.GetRequiredNodeAffinity(pod)
 }
 
 // IsNodeAffinityMatched returns whether the node matches the node affinity.
 func IsNodeAffinityMatched(node *corev1.Node, affinity nodeaffinity.RequiredNodeAffinity) bool {
 	// Ignore parsing errors for backwards compatibility.
-
-	klog.Info("FUXICO")
-	klog.Info(node.Labels)
-
 	match, _ := affinity.Match(node)
 	return match
 }
@@ -68,11 +63,9 @@ func IsNodeAffinityMatched(node *corev1.Node, affinity nodeaffinity.RequiredNode
 func IsTolerationMatched(node *corev1.Node, tolerations []corev1.Toleration) bool {
 	// If pod tolerate unschedulable taint, it's also tolerate `node.Spec.Unschedulable`.
 	podToleratesUnschedulable := schedcorev1.TolerationsTolerateTaint(tolerations, &unschedulableTaint)
-
 	if node.Spec.Unschedulable && !podToleratesUnschedulable {
 		return false
 	}
-
 	if _, isUntolerated := schedcorev1.FindMatchingUntoleratedTaint(node.Spec.Taints, tolerations, DoNotScheduleTaintsFilterFunc()); isUntolerated {
 		return false
 	}
